@@ -32,6 +32,7 @@ def main():
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     parser.add_argument("--strict", action="store_true", help="Exit 1 if any warnings found (not just errors)")
     parser.add_argument("--ci", action="store_true", help="CI mode: exit 1 on any issues, no color output")
+    parser.add_argument("--suggest", action="store_true", help="Show template docstrings for F001 (missing docstring) errors")
 
     args = parser.parse_args()
 
@@ -116,6 +117,13 @@ def main():
                     total_issues += 1
                     if issue.severity == "error":
                         total_errors += 1
+                    # Show suggested docstring for F001 if --suggest
+                    if issue.code == "F001" and args.suggest:
+                        suggestion = r.suggest_docstring()
+                        print(f"\n    {DIM}Suggested docstring (fill in the blanks):{RESET}")
+                        for line in suggestion.splitlines():
+                            print(f"    {DIM}{line}{RESET}")
+                        print()
             else:
                 print(f"    \033[92m✓ No issues found{RESET}" if not no_color else "    ✓ No issues")
                 files_ok += 1

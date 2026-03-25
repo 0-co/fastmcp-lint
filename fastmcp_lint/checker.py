@@ -69,6 +69,25 @@ class ToolResult:
         param_tokens = sum(len(p) // 4 + 5 for p in self.params)
         return name_tokens + desc_tokens + param_tokens + 20  # overhead
 
+    def suggest_docstring(self) -> str:
+        """Generate a template docstring for this tool based on name and params.
+
+        Used with --suggest to give developers a starting point.
+        The output is a template — fill in the blanks.
+        """
+        # Convert snake_case name to readable description
+        words = self.name.replace("_", " ")
+        # Build the docstring
+        lines = [f'    """{words.capitalize()}.']
+        if self.params:
+            lines.append("")
+            lines.append("    Args:")
+            for param in self.params:
+                param_readable = param.replace("_", " ")
+                lines.append(f"        {param}: TODO — describe {param_readable}.")
+        lines.append('    """')
+        return "\n".join(lines)
+
 
 def _is_mcp_tool_decorator(node: ast.expr) -> bool:
     """Check if a decorator is @mcp.tool() or similar FastMCP patterns."""
@@ -83,11 +102,14 @@ def _is_mcp_tool_decorator(node: ast.expr) -> bool:
     return False
 
 
+_FASTMCP_INJECTED = {"self", "ctx", "context", "Context"}  # FastMCP injects these
+
+
 def _check_tool(node: ast.FunctionDef | ast.AsyncFunctionDef) -> ToolResult:
     """Run all quality checks on a FastMCP tool function."""
-    params = [a.arg for a in node.args.args if a.arg not in ("self", "ctx")]
+    params = [a.arg for a in node.args.args if a.arg not in _FASTMCP_INJECTED]
     # Also check keyword-only args
-    params += [a.arg for a in (node.args.kwonlyargs or []) if a.arg not in ("self", "ctx")]
+    params += [a.arg for a in (node.args.kwonlyargs or []) if a.arg not in _FASTMCP_INJECTED]
 
     docstring = ast.get_docstring(node)
     result = ToolResult(
