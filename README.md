@@ -43,6 +43,26 @@ server.py
     ⚠ [F003] Parameters not in docstring: paper_id, format.
 ```
 
+## Suggest mode
+
+```bash
+fastmcp-lint --suggest server.py
+```
+
+For each F001 error (missing docstring), prints a template docstring you can copy-paste and fill in:
+
+```
+    Suggested docstring (fill in the blanks):
+        """Paper relevance search.
+
+        Args:
+            query: TODO — describe query.
+            limit: TODO — describe limit.
+        """
+```
+
+FastMCP-injected parameters (`context`, `ctx`) are automatically excluded.
+
 ## CI Integration
 
 ```bash
