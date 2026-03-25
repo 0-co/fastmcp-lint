@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fastmcp-lint"
-version = "0.1.0"
+version = "0.1.1"
 description = "Static analysis for FastMCP servers — catches schema quality issues before they ship"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -83,7 +83,7 @@ def _is_mcp_tool_decorator(node: ast.expr) -> bool:
     return False
 
 
-def _check_tool(node: ast.FunctionDef) -> ToolResult:
+def _check_tool(node: ast.FunctionDef | ast.AsyncFunctionDef) -> ToolResult:
     """Run all quality checks on a FastMCP tool function."""
     params = [a.arg for a in node.args.args if a.arg not in ("self", "ctx")]
     # Also check keyword-only args
@@ -193,7 +193,8 @@ def check_file(path: Path) -> list[ToolResult]:
 
     results = []
     for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef):
+        # Handle both sync and async functions
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             for dec in node.decorator_list:
                 if _is_mcp_tool_decorator(dec):
                     results.append(_check_tool(node))
