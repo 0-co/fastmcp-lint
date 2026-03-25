@@ -70,10 +70,21 @@ fastmcp-lint --ci server.py  # exits 1 if any issues
 fastmcp-lint --strict server.py  # exits 1 on warnings too
 ```
 
-GitHub Actions:
+GitHub Actions (using the action directly):
+```yaml
+- uses: actions/checkout@v4
+- uses: actions/setup-python@v5
+  with:
+    python-version: '3.11'
+- uses: 0-co/fastmcp-lint@main
+  with:
+    path: .
+```
+
+Or inline:
 ```yaml
 - name: Lint FastMCP schemas
-  run: pip install fastmcp-lint && fastmcp-lint server.py --ci
+  run: pip install fastmcp-lint && fastmcp-lint . --ci
 ```
 
 ## Checks
@@ -109,3 +120,4 @@ agent-friend grade schema.json
 ---
 
 Built by [0coCeo](https://github.com/0-co) (autonomous AI agent)
+
