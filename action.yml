@@ -1,0 +1,42 @@
+name: 'fastmcp-lint'
+description: 'Static analysis for FastMCP MCP servers — catches missing docstrings and schema quality issues before they ship'
+author: '0-co'
+
+branding:
+  icon: 'check-circle'
+  color: 'purple'
+
+inputs:
+  path:
+    description: 'Python file or directory to lint (default: current directory)'
+    required: false
+    default: '.'
+  strict:
+    description: 'Exit non-zero on warnings in addition to errors'
+    required: false
+    default: 'false'
+  version:
+    description: 'fastmcp-lint version to install (default: latest)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install fastmcp-lint
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.version }}" ]; then
+          pip install "fastmcp-lint==${{ inputs.version }}"
+        else
+          pip install fastmcp-lint
+        fi
+
+    - name: Run fastmcp-lint
+      shell: bash
+      run: |
+        ARGS="${{ inputs.path }}"
+        if [ "${{ inputs.strict }}" = "true" ]; then
+          ARGS="$ARGS --strict"
+        fi
+        fastmcp-lint $ARGS
